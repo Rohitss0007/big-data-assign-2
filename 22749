@@ -1,0 +1,78 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Function to compute Longest Common Prefix (LCP)
+int computeLCP(string text, int L, int M, int R) {
+    // Assuming constant time operation for LCP computation
+    // Implementation of LCP calculation not provided here
+    return 0; // Replace with actual LCP calculation
+}
+
+// Binary search function
+int binarySearch(string pattern, string text) {
+    int l = 0;
+    int r = text.length() - 1;
+    int L = l;
+    int M, R = r;
+
+    while (L <= R) {
+        int lcpLM = computeLCP(text, L, M, R);
+        int lcpMR = computeLCP(text, M, R, R);
+
+        if (L == R) {
+            // Simplest case
+            // Compare pattern with suffix Pos(M)
+            int suffixStart = l + L;
+            if (pattern == text.substr(suffixStart)) {
+                return suffixStart; // Pattern found at this position
+            } else {
+                return -1; // Pattern not found
+            }
+        }
+
+        if (lcpLM > l) {
+            // LCP(L, M) > l
+            // Update L = M
+            L = M;
+        } else if (lcpLM < l) {
+            // LCP(L, M) < l
+            // Update r = LCP(L, M), R = M
+            r = lcpLM;
+            R = M;
+        } else {
+            // LCP(L, M) = l
+            // Lexically compare pattern with suffix Pos(M)
+            int compareResult = pattern.compare(0, pattern.length(), text, l + M, pattern.length());
+            if (compareResult < 0) {
+                // Pattern is lexically less than suffix Pos(M)
+                // Update R = M
+                R = M;
+                r = l;
+            } else {
+                // Pattern is lexically greater than or equal to suffix Pos(M)
+                // Update L = M
+                L = M;
+            }
+        }
+
+        // Calculate new M for the next iteration
+        M = (L + R) / 2;
+    }
+
+    return -1; // Pattern not found
+}
+
+int main() {
+    string pattern = "pattern";
+    string text = "This is a sample text where pattern may exist.";
+
+    int result = binarySearch(pattern, text);
+    if (result != -1) {
+        cout << "Pattern found at position " << result << endl;
+    } else {
+        cout << "Pattern not found." << endl;
+    }
+
+    return 0;
+}
